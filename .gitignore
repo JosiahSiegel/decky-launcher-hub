@@ -1,0 +1,269 @@
+# =========================
+# Dependencies
+# =========================
+node_modules/
+.pnpm-store/
+bower_components/
+jspm_packages/
+.npm/
+.yalc/
+yalc.lock
+
+# =========================
+# Build outputs
+# =========================
+dist/
+build/
+out/
+.out/
+backend/out/
+*.zip
+*.tar.gz
+*.tar
+*.tgz
+launcher-hub.zip
+decky_plugin.zip
+
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+cython_debug/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# =========================
+# TypeScript / JavaScript
+# =========================
+*.tsbuildinfo
+.npm
+.eslintcache
+.parcel-cache
+.next
+.nuxt
+.cache
+.vuepress/dist
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+.yarn-integrity
+*.js.map
+*.ts.map
+
+# =========================
+# Testing
+# =========================
+coverage/
+*.lcov
+.nyc_output/
+lib-cov/
+jest_html_reporters.html
+test-report.xml
+test-results/
+playwright-report/
+playwright/.cache/
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# =========================
+# Environment files
+# =========================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# =========================
+# IDE and editor files
+# =========================
+# VS Code
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/settings.json.example
+!.vscode/keybindings.json.example
+.vscode/settings.json
+.vscode/keybindings.json
+.vscode/*.code-snippets
+.history/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.idea_modules/
+
+# Eclipse
+.project
+.classpath
+.c9/
+.settings/
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Vim
+*.swp
+*.swo
+*.swn
+*.bak
+*~
+.netrwhist
+Session.vim
+Sessionx.vim
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# =========================
+# OS files
+# =========================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+Icon
+.DocumentRevisions-V100
+.fseventsd
+.TemporaryItems
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+.directory
+.Trash-*
+.nfs*
+
+# =========================
+# Package managers
+# =========================
+# We keep package-lock.json for npm reproducibility
+yarn.lock
+pnpm-lock.yaml
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# =========================
+# Decky specific
+# =========================
+homebrew/
+settings.json
+cli/
+decky_plugin.py
+
+# =========================
+# Temporary files
+# =========================
+*.tmp
+*.temp
+*.pid
+*.seed
+*.pid.lock
+.tmp/
+.temp/
+tmp/
+temp/
+
+# =========================
+# Documentation
+# =========================
+docs/_build/
+docs/.doctrees/
+site/
+
+# =========================
+# Misc
+# =========================
+*.orig
+.cache/
+.parcel-cache/
+.sass-cache/
+*.css.map
+*.js.map
+.grunt
+.lock-wscript
+.node_repl_history
+.yarn-integrity

@@ -1,0 +1,304 @@
+# =========================
+# Auto detect text files and perform LF normalization
+# =========================
+* text=auto eol=lf
+
+# =========================
+# Source code
+# =========================
+*.ts text diff=typescript
+*.tsx text diff=typescript
+*.js text diff=javascript
+*.jsx text diff=javascript
+*.mjs text diff=javascript
+*.cjs text diff=javascript
+*.json text
+*.jsonc text
+*.json5 text
+
+# Python
+*.py text diff=python
+*.pyw text diff=python
+*.pyx text diff=python
+*.pxd text diff=python
+*.py3 text diff=python
+*.pyi text diff=python
+
+# Web
+*.html text diff=html
+*.htm text diff=html
+*.css text diff=css
+*.scss text diff=css
+*.sass text diff=css
+*.less text diff=css
+*.vue text diff=html
+
+# =========================
+# Configuration files
+# =========================
+*.yml text
+*.yaml text
+*.toml text
+*.ini text
+*.cfg text
+*.conf text
+*.config text
+.editorconfig text
+.gitattributes text
+.gitignore text
+.gitconfig text
+*.npmignore text
+*.prettierignore text
+*.eslintignore text
+
+# Docker
+Dockerfile text
+*.dockerfile text
+docker-compose.yml text
+docker-compose.yaml text
+.dockerignore text
+
+# Shell scripts
+*.sh text eol=lf diff=bash
+*.bash text eol=lf diff=bash
+*.zsh text eol=lf diff=bash
+*.fish text eol=lf diff=bash
+*.command text eol=lf diff=bash
+
+# Windows scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# =========================
+# Documentation
+# =========================
+*.md text diff=markdown
+*.mdx text diff=markdown
+*.markdown text diff=markdown
+*.mdown text diff=markdown
+*.mkd text diff=markdown
+*.mkdn text diff=markdown
+*.mdtxt text diff=markdown
+*.mdtext text diff=markdown
+*.txt text
+README* text
+readme* text
+LICENSE* text
+AUTHORS text
+CONTRIBUTORS text
+CHANGES text
+CHANGELOG* text
+HISTORY text
+NEWS text
+TODO text
+NOTICE text
+
+# =========================
+# Templates
+# =========================
+*.ejs text
+*.erb text
+*.hbs text
+*.handlebars text
+*.mustache text
+*.njk text
+*.pug text
+*.jade text
+*.twig text
+
+# =========================
+# Build files
+# =========================
+Makefile text
+makefile text
+GNUmakefile text
+*.mk text
+*.make text
+CMakeLists.txt text
+*.cmake text
+
+# =========================
+# Package files
+# =========================
+*.xml text
+package.json text eol=lf
+package-lock.json text eol=lf -diff
+pnpm-lock.yaml text eol=lf -diff
+yarn.lock text eol=lf -diff
+composer.json text eol=lf
+composer.lock text -diff
+Gemfile text
+Gemfile.lock text -diff
+Pipfile text
+Pipfile.lock text -diff
+requirements.txt text
+poetry.lock text -diff
+Cargo.toml text
+Cargo.lock text -diff
+
+# =========================
+# Graphics
+# =========================
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text
+*.svgz binary
+*.webp binary
+*.bmp binary
+*.tif binary
+*.tiff binary
+*.raw binary
+*.psd binary
+*.ai binary
+*.eps binary
+
+# =========================
+# Fonts
+# =========================
+*.ttf binary
+*.otf binary
+*.eot binary
+*.woff binary
+*.woff2 binary
+
+# =========================
+# Archives
+# =========================
+*.zip binary
+*.tar binary
+*.tar.gz binary
+*.tgz binary
+*.gz binary
+*.bz2 binary
+*.7z binary
+*.rar binary
+*.jar binary
+*.war binary
+*.ear binary
+
+# =========================
+# Executables
+# =========================
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
+*.app binary
+*.out binary
+*.msi binary
+*.msm binary
+*.msp binary
+
+# =========================
+# Media
+# =========================
+*.mp3 binary
+*.mp4 binary
+*.m4a binary
+*.ogg binary
+*.wav binary
+*.flac binary
+*.aac binary
+*.webm binary
+*.avi binary
+*.mov binary
+*.wmv binary
+*.mpg binary
+*.mpeg binary
+*.mkv binary
+
+# =========================
+# Documents
+# =========================
+*.pdf binary
+*.doc binary
+*.docx binary
+*.xls binary
+*.xlsx binary
+*.ppt binary
+*.pptx binary
+*.odt binary
+*.ods binary
+*.odp binary
+
+# =========================
+# Data
+# =========================
+*.csv text
+*.tsv text
+*.sql text
+*.sqlite binary
+*.sqlite3 binary
+*.db binary
+*.dbf binary
+
+# =========================
+# Compiled/Generated
+# =========================
+*.pyc binary
+*.pyo binary
+*.pyd binary
+*.so binary
+*.class binary
+*.jar binary
+*.war binary
+*.ear binary
+*.dll binary
+*.node binary
+*.o binary
+*.a binary
+*.lib binary
+*.dylib binary
+*.ncb binary
+*.sdf binary
+*.suo binary
+*.pdb binary
+*.idb binary
+
+# =========================
+# Special files for Decky/Steam Deck
+# =========================
+plugin.json text eol=lf
+defaults.py text eol=lf diff=python
+main.py text eol=lf diff=python
+
+# =========================
+# GitHub specific
+# =========================
+.github/**/*.yml text eol=lf
+.github/**/*.yaml text eol=lf
+.github/**/*.md text eol=lf
+
+# =========================
+# Linguist overrides
+# =========================
+# Mark generated files
+dist/* linguist-generated=true
+build/* linguist-generated=true
+coverage/* linguist-generated=true
+*.min.js linguist-generated=true
+*.min.css linguist-generated=true
+package-lock.json linguist-generated=true
+pnpm-lock.yaml linguist-generated=true
+yarn.lock linguist-generated=true
+
+# Mark documentation
+docs/* linguist-documentation
+*.md linguist-documentation
+README* linguist-documentation
+CONTRIBUTING* linguist-documentation
+
+# Mark vendored files
+node_modules/* linguist-vendored
+vendor/* linguist-vendored
+third_party/* linguist-vendored
+
+# Language detection
+*.tsx linguist-language=TypeScript
+*.jsx linguist-language=JavaScript
+*.mjs linguist-language=JavaScript
+*.cjs linguist-language=JavaScript
