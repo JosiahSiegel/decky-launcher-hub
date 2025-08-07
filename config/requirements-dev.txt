@@ -1,0 +1,15 @@
+# Development dependencies (OPTIONAL)
+# 
+# These are optional dependencies for enhanced testing features.
+# The basic test suite (tests/run_tests.py) works without these.
+#
+# To install: pip install -r requirements-dev.txt
+
+# Optional: For advanced testing with pytest
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.11.0
+pytest-cov>=4.1.0
+
+# Note: Basic tests work without any of these dependencies
+# Run: cd tests && python3 run_tests.py

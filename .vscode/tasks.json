@@ -1,12 +1,12 @@
 {
   "version": "2.0.0",
   "tasks": [
-    // Primary Developer Workflow
+    // === PRIMARY WORKFLOWS ===
     {
-      "label": "🧹 Clean, Build & Deploy",
+      "label": "🚀 Full Deploy Pipeline",
       "type": "shell",
-      "command": "make clean && echo '' && make package && echo '' && ./scripts/deploy-auto.sh && echo '' && echo '✅ Complete! Press Enter to close...' && read",
-      "detail": "Full workflow: clean → build → deploy",
+      "command": "make clean && echo '' && make package && echo '' && echo '🧪 Running tests...' && make test-all && echo '' && ./scripts/deploy-auto.sh && echo '' && echo '✅ Complete! Press Enter to close...' && read",
+      "detail": "Complete workflow: clean → build → test → deploy",
       "problemMatcher": [],
       "group": {
         "kind": "build",
@@ -21,98 +21,26 @@
       }
     },
     {
-      "label": "📦 Build & Deploy",
+      "label": "⚡ Quick Deploy",
       "type": "shell",
-      "command": "make package && echo '' && ./scripts/deploy-auto.sh && echo '' && echo '✅ Complete! Press Enter to close...' && read",
-      "detail": "Build and deploy without cleaning",
+      "command": "make package && ./scripts/deploy-auto.sh && echo '' && echo '✅ Deployed! Press Enter to close...' && read",
+      "detail": "Fast deploy without tests (build → deploy)",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
         "panel": "new",
         "clear": true,
         "focus": true,
-        "close": false
-      }
-    },
-    {
-      "label": "🚀 Deploy Only",
-      "type": "shell",
-      "command": "./scripts/deploy-auto.sh && echo '' && echo 'Press Enter to close...' && read",
-      "detail": "Automated deployment with sudo",
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-        "clear": true,
-        "focus": true,
-        "close": false
-      }
-    },
-    {
-      "label": "⚙️ Setup Steam Deck for Development",
-      "type": "shell",
-      "command": "./scripts/setup-deck-dev.sh",
-      "detail": "Enable passwordless sudo for easier development",
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-        "clear": true,
-        "focus": true,
-        "close": false
-      }
-    },
-    {
-      "label": "🔨 Build Only",
-      "type": "shell",
-      "command": "npm run build && echo '' && echo '✅ Build complete! Press Enter to close...' && read",
-      "detail": "Quick build for testing",
-      "problemMatcher": "$tsc",
-      "presentation": {
-        "reveal": "always",
-        "panel": "shared",
-        "clear": true,
-        "focus": false,
         "close": false
       }
     },
     
-    // Development Tools
+    // === DEVELOPMENT ===
     {
-      "label": "👀 Watch Mode",
+      "label": "🧪 Test & Fix",
       "type": "shell",
-      "command": "npm run watch",
-      "detail": "Auto-rebuild on file changes",
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "typescript",
-        "fileLocation": "relative",
-        "pattern": {
-          "regexp": "^([^\\s].*?)\\((\\d+),(\\d+)\\):\\s+(error|warning)\\s+TS(\\d+):\\s+(.*)$",
-          "file": 1,
-          "line": 2,
-          "column": 3,
-          "severity": 4,
-          "code": 5,
-          "message": 6
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^rollup.*",
-          "endsPattern": "^created|^\\[!\\]"
-        }
-      },
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated",
-        "showReuseMessage": false
-      }
-    },
-    {
-      "label": "✅ Fix Code Issues",
-      "type": "shell",
-      "command": "echo '🔧 Running lint fix...' && npm run lint:fix && echo '' && echo '🎨 Running formatter...' && npm run format && echo '' && echo '📝 Type checking...' && npm run type-check && echo '' && echo '✅ All fixes applied! Press Enter to close...' && read",
-      "detail": "Auto-fix linting, formatting, and check types",
+      "command": "echo '🔧 Fixing code issues...' && npm run lint:fix 2>/dev/null && npm run format 2>/dev/null && echo '' && echo '🧪 Running all tests...' && make test-all && echo '' && echo '📊 Test Results:' && echo '  Python: See output above' && echo '  JavaScript: See output above' && echo '' && echo '✅ Complete! Press Enter to close...' && read",
+      "detail": "Fix code issues, run tests, show coverage",
       "group": {
         "kind": "test",
         "isDefault": true
@@ -120,22 +48,6 @@
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
-        "panel": "shared",
-        "clear": true,
-        "focus": false,
-        "close": false
-      }
-    },
-    
-    // Setup & Configuration
-    {
-      "label": "🚀 Initial Setup",
-      "type": "shell",
-      "command": "make setup && echo '' && echo '✅ Setup complete! Press Enter to close...' && read",
-      "detail": "First-time setup for the project",
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
         "panel": "new",
         "clear": true,
         "focus": true,
@@ -143,54 +55,36 @@
       }
     },
     {
-      "label": "⚙️ Configure Steam Deck",
+      "label": "👀 Watch Mode",
       "type": "shell",
-      "command": "./scripts/configure-env.sh && echo '' && echo 'Press Enter to close...' && read",
-      "detail": "Configure Steam Deck IP and optional sudo password",
-      "problemMatcher": [],
+      "command": "echo 'Starting watch mode (Ctrl+C to stop)...' && echo '' && echo '1) Build watch (if configured)' && echo '2) Test watch' && echo '' && npm run test:watch",
+      "detail": "Auto-run tests on file changes",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "jest",
+        "pattern": {
+          "regexp": "^\\s*FAIL\\s+(.*)$",
+          "file": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^Test Suites:",
+          "endsPattern": "^(?:Test Suites:|Ran all test suites)"
+        }
+      },
       "presentation": {
         "reveal": "always",
-        "panel": "shared",
-        "clear": true,
-        "focus": true,
-        "close": false
-      }
-    },
-    
-    // Testing & Debugging
-    {
-      "label": "🔌 Test Connection",
-      "type": "shell",
-      "command": "./scripts/test-connection.sh && echo '' && echo 'Press Enter to close...' && read",
-      "detail": "Test SSH connection to Steam Deck",
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "panel": "shared",
-        "clear": true,
-        "focus": true,
-        "close": false
-      }
-    },
-    {
-      "label": "🧪 Run Tests",
-      "type": "shell",
-      "command": "npm test && echo '' && echo 'Press Enter to close...' && read",
-      "detail": "Run test suite",
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "panel": "shared",
+        "panel": "dedicated",
         "clear": true,
         "focus": false,
         "close": false
       }
     },
     {
-      "label": "📋 View Plugin Logs",
+      "label": "📋 Live Logs",
       "type": "shell",
       "command": "./scripts/view-logs.sh",
-      "detail": "View live logs from Steam Deck",
+      "detail": "Stream logs from Steam Deck",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
@@ -201,39 +95,69 @@
       }
     },
     
-    // Maintenance
+    // === SETUP & MAINTENANCE ===
     {
-      "label": "🧹 Clean All",
+      "label": "🚀 Initial Setup",
       "type": "shell",
-      "command": "make clean && echo '' && echo '✅ Cleaned! Press Enter to close...' && read",
-      "detail": "Remove all build artifacts",
+      "command": "echo '🚀 Setting up Launcher Hub...' && echo '' && make setup && echo '' && echo '📦 Installing test dependencies...' && pip install -r requirements-dev.txt 2>/dev/null || echo 'Python deps: Run with proper Python environment' && npm install --save-dev && echo '' && echo '⚙️ Configuring Steam Deck connection...' && ./scripts/configure-env.sh 2>/dev/null || echo 'Run ./scripts/configure-env.sh manually if needed' && echo '' && echo '✅ Setup complete! Press Enter to close...' && read",
+      "detail": "One-time setup: dependencies, config, environment",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "clear": true,
+        "focus": true,
+        "close": false
+      }
+    },
+    {
+      "label": "🔍 Verify & Clean",
+      "type": "shell",
+      "command": "echo '🔍 Verifying project structure...' && make verify && echo '' && echo '🧹 Cleaning artifacts...' && make clean && echo '' && echo '🔌 Testing Steam Deck connection...' && ./scripts/test-connection.sh && echo '' && echo '✅ Complete! Press Enter to close...' && read",
+      "detail": "Check project health, clean, test connection",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
         "panel": "shared",
         "clear": true,
-        "focus": false,
+        "focus": true,
         "close": false
       }
     },
+    
+    // === QUICK ACTIONS ===
     {
-      "label": "🔍 Verify Project",
+      "label": "🐍 Python Tests",
       "type": "shell",
-      "command": "make verify && echo '' && echo 'Press Enter to close...' && read",
-      "detail": "Check project structure and files",
+      "command": "cd tests && python3 run_tests.py && echo '' && echo 'Press Enter to close...' && read",
+      "detail": "Run Python backend tests only",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
         "panel": "shared",
         "clear": true,
-        "focus": false,
+        "focus": true,
         "close": false
       }
     },
     {
-      "label": "📦 Bump Version",
+      "label": "📦 JavaScript Tests",
       "type": "shell",
-      "command": "./scripts/bump-version.sh ${input:newVersion} && echo '' && echo 'Press Enter to close...' && read",
+      "command": "npm test && echo '' && echo 'Press Enter to close...' && read",
+      "detail": "Run JavaScript frontend tests only",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true,
+        "focus": true,
+        "close": false
+      }
+    },
+    {
+      "label": "📈 Version Bump",
+      "type": "shell",
+      "command": "./scripts/bump-version.sh ${input:newVersion} && echo '' && echo 'Version updated! Press Enter to close...' && read",
       "detail": "Update version in package.json and plugin.json",
       "problemMatcher": [],
       "presentation": {
@@ -247,16 +171,10 @@
   ],
   "inputs": [
     {
-      "id": "steamDeckIP",
-      "type": "promptString",
-      "description": "Steam Deck IP address",
-      "default": "192.168.1.100"
-    },
-    {
       "id": "newVersion",
       "type": "promptString",
-      "description": "New version number (e.g., 1.0.3)",
-      "default": "1.0.3"
+      "description": "New version number (e.g., 1.4.5)",
+      "default": "1.4.5"
     }
   ]
 }

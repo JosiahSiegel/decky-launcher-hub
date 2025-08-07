@@ -88,7 +88,7 @@ package: build
 	@mkdir -p dist
 	@# Check required files
 	@test -f dist/index.js || (echo "❌ dist/index.js not found" && exit 1)
-	@test -f main.py || (echo "❌ main.py not found" && exit 1)
+	@test -f src/backend/main.py || (echo "❌ src/backend/main.py not found" && exit 1)
 	@test -f plugin.json || (echo "❌ plugin.json not found" && exit 1)
 	@test -f package.json || (echo "❌ package.json not found" && exit 1)
 	@echo "✅ Plugin packaged successfully"
@@ -108,7 +108,7 @@ verify:
 	@echo ""
 	@echo "Required files:"
 	@test -f dist/index.js && echo "  ✓ dist/index.js" || echo "  ✗ dist/index.js"
-	@test -f main.py && echo "  ✓ main.py" || echo "  ✗ main.py"
+	@test -f src/backend/main.py && echo "  ✓ src/backend/main.py" || echo "  ✗ src/backend/main.py"
 	@test -f plugin.json && echo "  ✓ plugin.json" || echo "  ✗ plugin.json"
 	@test -f package.json && echo "  ✓ package.json" || echo "  ✗ package.json"
 	@test -f .env && echo "  ✓ .env" || echo "  ⚠ .env (run 'make setup' to create)"
@@ -137,6 +137,54 @@ watch:
 	@npm run watch 2>/dev/null || echo "⚠️ Watch mode not configured"
 
 # Run tests
-test:
-	@echo "🧪 Running tests..."
-	@npm test 2>/dev/null || echo "⚠️ No tests configured"
+test: test-all
+
+# Run all tests (Python and JavaScript)
+test-all:
+	@echo "🧪 Running all tests..."
+	@echo ""
+	@echo "📐 Running Python tests..."
+	@cd tests && python3 run_tests.py
+	@echo ""
+	@echo "📐 Running JavaScript tests..."
+	@npm run test:integration
+	@echo ""
+	@echo "✅ All tests complete"
+
+# Run Python tests only
+test-python:
+	@echo "🐍 Running Python backend tests..."
+	@cd tests && python3 run_tests.py
+
+# Run Python tests with coverage
+test-python-coverage:
+	@echo "🐍 Running Python tests with coverage..."
+	@echo "Note: Coverage requires pytest-cov. Using simple test runner instead:"
+	@cd tests && python3 run_tests.py
+
+# Run JavaScript tests only
+test-js:
+	@echo "📦 Running JavaScript frontend tests..."
+	@npm test
+
+# Run JavaScript tests with coverage
+test-js-coverage:
+	@echo "📦 Running JavaScript tests with coverage..."
+	@npm run test:coverage
+
+# Run JavaScript tests in watch mode
+test-js-watch:
+	@echo "👀 Running JavaScript tests in watch mode..."
+	@npm run test:watch
+
+# Run integration tests
+test-integration:
+	@echo "🔗 Running integration tests..."
+	@npm run test:integration
+
+# Install test dependencies
+test-deps:
+	@echo "📦 Installing test dependencies..."
+	@pip install -r config/requirements-dev.txt
+	@npm install --save-dev
+	@echo "✅ Test dependencies installed"

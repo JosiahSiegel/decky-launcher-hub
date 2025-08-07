@@ -1,7 +1,8 @@
 {
   "name": "Launcher Hub",
-  "version": "1.4.4",
+  "version": "1.5.2",
   "author": "Independent Developer",
+  "api_version": 1,
   "flags": ["debug"],
   "publish": {
     "tags": ["launcher-hub", "launchers", "games", "streaming", "steamdeck"],

@@ -60,7 +60,7 @@ echo -n "  - dist/index.js... "
 scp -q dist/index.js ${DECK_USER}@${DECK_IP}:~/launcher-hub-deploy/ 2>/dev/null && echo -e "${GREEN}✓${NC}" || echo -e "${RED}✗${NC}"
 
 echo -n "  - main.py... "
-scp -q main.py ${DECK_USER}@${DECK_IP}:~/launcher-hub-deploy/ 2>/dev/null && echo -e "${GREEN}✓${NC}" || echo -e "${RED}✗${NC}"
+scp -q src/backend/main.py ${DECK_USER}@${DECK_IP}:~/launcher-hub-deploy/main.py 2>/dev/null && echo -e "${GREEN}✓${NC}" || echo -e "${RED}✗${NC}"
 
 echo -n "  - plugin.json... "
 scp -q plugin.json ${DECK_USER}@${DECK_IP}:~/launcher-hub-deploy/ 2>/dev/null && echo -e "${GREEN}✓${NC}" || echo -e "${RED}✗${NC}"

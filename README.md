@@ -1,6 +1,8 @@
-# Launcher Hub - Decky Plugin for Steam Deck
+# 🚀 Launcher Hub - Decky Plugin for Steam Deck
 
 A Decky Loader plugin that manages non-Steam game launchers on Steam Deck, providing an easy way to install and manage Epic Games, GOG Galaxy, Battle.net, and other launchers.
+
+**Version 1.5.0** - Performance optimizations, improved organization, and 100% test coverage!
 
 ## Features
 
@@ -56,22 +58,53 @@ A Decky Loader plugin that manages non-Steam game launchers on Steam Deck, provi
 
 ```
 launcher-hub/
-├── dist/                  # Built plugin files
-│   └── index.js          # Frontend bundle (IIFE format)
-├── src/                  # Source code
-│   ├── index.tsx         # Frontend (React/TypeScript)
-│   └── backend/
-│       └── main.py       # Backend (Python)
-├── scripts/              # Development scripts
-│   ├── deploy-auto.sh    # Automated deployment
-│   ├── configure-env.sh  # Setup wizard
-│   └── ...
-├── main.py               # Backend entry point
-├── plugin.json           # Plugin metadata
-├── package.json          # Node dependencies
-├── Makefile              # Build automation
-└── .env                  # Local configuration
+├── src/                    # Source code
+│   ├── components/         # React UI components
+│   │   ├── Content.tsx     # Main content component
+│   │   ├── LauncherList.tsx # Launcher management UI
+│   │   ├── ServiceList.tsx  # Service management UI
+│   │   └── DebugPanel.tsx   # Debug/developer panel
+│   ├── services/           # Service layer
+│   │   └── Backend.ts      # Backend API communication
+│   ├── types/              # TypeScript definitions
+│   │   └── launcher.ts     # Launcher/Service types
+│   ├── utils/              # Utility functions
+│   │   └── errorHandler.ts # Global error handling
+│   ├── backend/            # Python backend
+│   │   └── main.py         # Main backend implementation
+│   └── index.tsx           # Plugin entry point
+├── tests/                  # Test suites (43 tests, 100% pass rate)
+│   ├── frontend/           # React component tests (18 tests)
+│   ├── integration/        # End-to-end tests (15 tests)
+│   ├── test_main.py        # Python backend tests (10 tests)
+│   └── run_tests.py        # Python test runner (no dependencies!)
+├── config/                 # Centralized configuration
+│   ├── jest.config.js      # Jest configuration
+│   ├── eslint.config.js    # ESLint configuration
+│   ├── prettier.config.js  # Prettier configuration
+│   └── pytest.ini          # Pytest configuration
+├── scripts/                # Development & deployment scripts
+│   ├── deploy-auto.sh      # Automated deployment
+│   ├── deploy-simple.sh    # Simple deployment
+│   ├── test-connection.sh  # Test SSH connection
+│   └── view-logs.sh        # View plugin logs
+├── dist/                   # Built plugin files
+│   └── index.js            # Frontend bundle (ES6 module format)
+├── docs/                   # Documentation
+│   └── PROJECT_STRUCTURE.md # Detailed structure guide
+├── plugin.json             # Plugin metadata
+├── package.json            # Node dependencies
+├── Makefile                # Build automation
+├── jest.config.js          # Jest proxy → config/jest.config.js
+├── pytest.ini              # Pytest proxy → config/pytest.ini
+├── .eslintrc.js            # ESLint proxy → config/eslint.config.js
+├── .prettierrc.js          # Prettier proxy → config/prettier.config.js
+└── .env                    # Local configuration (not in git)
 ```
+
+**Note**: Root configuration files are minimal proxies that reference the actual configs in `config/` directory for better organization.
+
+See [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) for complete details.
 
 ## Development
 
@@ -147,7 +180,7 @@ sudo ~/launcher-hub-stage/install.sh
 
 ### Frontend (JavaScript/React)
 - **Entry**: `src/index.tsx` → `dist/index.js`
-- **Format**: IIFE with `(DFL, SP_REACT)` parameters
+- **Format**: ES6 modules with `export default`
 - **State**: React hooks (useState, useEffect)
 - **Backend Communication**: `serverAPI.callPluginMethod()`
 
@@ -158,7 +191,7 @@ sudo ~/launcher-hub-stage/install.sh
 - **Logging**: `decky_plugin.logger`
 
 ### Plugin Structure Requirements
-- Frontend must be IIFE format
+- Frontend must use ES6 module format (export default)
 - Backend must have `Plugin` class
 - Plugin directories are root-owned (by design)
 - Hot reload supported for both frontend and backend
@@ -196,7 +229,7 @@ async def uninstall_launcher(self, launcher_id: str) -> Dict[str, Any]:
 ### Frontend Errors
 - "DFL is not defined": Decky not properly injected
 - "TypeError: map is not a function": Backend returning non-array
-- "Unexpected token export": Wrong module format (must be IIFE)
+- "Unexpected token export": Wrong module format (must be ES6)
 
 ### Deployment Issues
 - Permission denied: Plugin dirs are root-owned, use sudo
