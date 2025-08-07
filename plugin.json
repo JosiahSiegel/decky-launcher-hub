@@ -1,0 +1,11 @@
+{
+  "name": "Launcher Hub",
+  "version": "1.4.4",
+  "author": "Independent Developer",
+  "flags": ["debug"],
+  "publish": {
+    "tags": ["launcher-hub", "launchers", "games", "streaming", "steamdeck"],
+    "description": "Unified launcher management with event-driven architecture. Install Epic, GOG, Battle.net and more with real-time progress tracking.",
+    "image": "https://raw.githubusercontent.com/launcher-hub/launcher-hub/main/assets/logo.png"
+  }
+}

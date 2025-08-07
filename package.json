@@ -1,0 +1,30 @@
+{
+  "name": "launcher-hub",
+  "version": "1.4.4",
+  "description": "Launcher Hub - Manages non-Steam game launchers on Steam Deck",
+  "main": "main.py",
+  "scripts": {
+    "build": "echo 'Build would run here if rollup was configured'",
+    "watch": "echo 'Watch mode would run here if rollup was configured'",
+    "lint": "echo 'Linting not configured yet'",
+    "lint:fix": "echo 'Lint fix not configured yet'",
+    "format": "echo 'Formatting not configured yet'",
+    "type-check": "echo 'Type checking not configured yet'",
+    "test": "echo 'No tests configured yet'",
+    "deploy": "./scripts/deploy-simple.sh",
+    "logs": "./scripts/view-logs.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/josiahsiegel/decky-launcher-hub.git"
+  },
+  "keywords": [
+    "decky",
+    "plugin",
+    "launcher-hub",
+    "steam-deck",
+    "launchers"
+  ],
+  "author": "Launcher Hub Team",
+  "license": "MIT"
+}
