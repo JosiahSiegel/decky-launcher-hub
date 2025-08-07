@@ -1,0 +1,75 @@
+# Dependabot configuration for automated dependency updates
+# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  # JavaScript/npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "josiahsiegel"
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "npm"
+      include: "scope"
+    ignore:
+      # Ignore major version updates for critical dependencies
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+    groups:
+      # Group all ESLint updates together
+      eslint:
+        patterns:
+          - "eslint*"
+          - "@typescript-eslint/*"
+      # Group all testing library updates
+      testing:
+        patterns:
+          - "jest*"
+          - "@testing-library/*"
+          - "react-test-renderer"
+
+  # Python/pip dependencies
+  - package-ecosystem: "pip"
+    directory: "/config"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "josiahsiegel"
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "pip"
+      include: "scope"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "josiahsiegel"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"

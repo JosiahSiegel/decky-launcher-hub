@@ -1,0 +1,127 @@
+name: Build and Release Decky Plugin
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.5.3)'
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Build Plugin
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20.x"
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run tests
+      run: |
+        npm run test
+        cd tests && python run_tests.py
+    
+    - name: Build plugin with IIFE wrapper
+      run: npm run build
+    
+    - name: Verify IIFE format
+      run: |
+        if ! head -n 1 dist/index.js | grep -q "(function(DFL, SP_REACT)"; then
+          echo "Error: Build did not produce correct IIFE format"
+          exit 1
+        fi
+        echo "✅ Plugin built with correct IIFE wrapper"
+    
+    - name: Create plugin archive
+      run: |
+        mkdir -p launcher-hub
+        cp -r dist launcher-hub/
+        cp main.py launcher-hub/
+        cp plugin.json launcher-hub/
+        cp package.json launcher-hub/
+        cp README.md launcher-hub/
+        cp LICENSE launcher-hub/
+        tar -czf launcher-hub.tar.gz launcher-hub/
+    
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: launcher-hub-plugin
+        path: launcher-hub.tar.gz
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download build artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: launcher-hub-plugin
+    
+    - name: Extract version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.get_version.outputs.VERSION }}
+        name: Launcher Hub v${{ steps.get_version.outputs.VERSION }}
+        body: |
+          ## 🚀 Launcher Hub v${{ steps.get_version.outputs.VERSION }}
+          
+          ### Installation
+          1. Download `launcher-hub.tar.gz` from this release
+          2. Extract to your Steam Deck: `~/homebrew/plugins/`
+          3. Restart Decky Loader
+          
+          ### What's New
+          - Built with IIFE wrapper for Decky compatibility
+          - ES6 modules with post-build processing
+          - Improved error handling
+          
+          ### Compatibility
+          - Decky Loader 2.x
+          - Steam Deck (all models)
+          
+          ### Debug
+          Enable debug mode by adding `"flags": ["debug"]` to plugin.json
+        files: |
+          launcher-hub.tar.gz
+        draft: false
+        prerelease: false
+
+  deploy-to-decky-store:
+    name: Submit to Decky Plugin Database
+    needs: release
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Prepare submission
+      run: |
+        echo "Ready to submit to Decky Plugin Database"
+        echo "Manual step required: Create PR to https://github.com/SteamDeckHomebrew/decky-plugin-database"
+        echo "Include:"
+        echo "  - Plugin name: Launcher Hub"
+        echo "  - Repository: ${{ github.repository }}"
+        echo "  - Version: ${GITHUB_REF#refs/tags/}"
