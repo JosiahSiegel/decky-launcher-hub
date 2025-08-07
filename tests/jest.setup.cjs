@@ -11,10 +11,9 @@ global.console = {
   ...console,
   error: jest.fn(),
   warn: jest.fn(),
-  // Keep log, info, and debug for debugging
-  log: console.log,
-  info: console.info,
-  debug: console.debug,
+  log: jest.fn(), // Mock log too to prevent EPIPE errors
+  info: jest.fn(),
+  debug: jest.fn(),
 };
 
 // Mock localStorage
