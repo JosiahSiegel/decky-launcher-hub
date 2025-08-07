@@ -58,7 +58,7 @@ module.exports = {
   
   // Transform files
   transform: {
-    '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
+    '^.+\\.(js|jsx|ts|tsx)$': '<rootDir>/tests/babel-transformer.cjs',
   },
   
   // Ignore patterns
