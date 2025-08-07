@@ -4,7 +4,7 @@
  */
 
 // Add custom matchers from jest-dom
-import '@testing-library/jest-dom';
+require('@testing-library/jest-dom');
 
 // Mock console methods to reduce noise in tests
 global.console = {

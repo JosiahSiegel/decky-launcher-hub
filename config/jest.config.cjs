@@ -15,7 +15,7 @@ module.exports = {
   rootDir: path.resolve(__dirname, '..'),
   
   // Setup files to run after test framework is installed
-  setupFilesAfterEnv: ['<rootDir>/tests/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/tests/jest.setup.cjs'],
   
   // Module name mapping for static assets and CSS
   moduleNameMapper: {
@@ -24,12 +24,12 @@ module.exports = {
     
     // Mock static file imports
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
-      '<rootDir>/tests/__mocks__/fileMock.js',
+      '<rootDir>/tests/__mocks__/fileMock.cjs',
     
     // Mock Decky plugin modules
-    '@decky/api': '<rootDir>/tests/__mocks__/deckyApi.js',
-    '@decky/ui': '<rootDir>/tests/__mocks__/deckyUi.js',
-    'decky-frontend-lib': '<rootDir>/tests/__mocks__/decky-frontend-lib.js',
+    '@decky/api': '<rootDir>/tests/__mocks__/deckyApi.cjs',
+    '@decky/ui': '<rootDir>/tests/__mocks__/deckyUi.cjs',
+    'decky-frontend-lib': '<rootDir>/tests/__mocks__/decky-frontend-lib.cjs',
   },
   
   // Test file patterns
