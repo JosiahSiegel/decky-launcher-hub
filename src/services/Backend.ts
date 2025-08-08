@@ -80,4 +80,9 @@ export class Backend {
     cache.clear();
     return result;
   }
+
+  static async launchLauncher(launcherId: string) {
+    const result = await this.callMethod('launch_launcher', { launcher_id: launcherId });
+    return result;
+  }
 }

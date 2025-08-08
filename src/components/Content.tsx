@@ -76,13 +76,45 @@ export const Content: React.FC<ContentProps> = ({ serverAPI }) => {
     [loadData, serverAPI]
   );
 
+  // Handle launcher launch
+  const handleLaunch = React.useCallback(
+    async (launcherId: string) => {
+      try {
+        const result = await Backend.launchLauncher(launcherId);
+        if (result?.result?.success) {
+          // Find the launcher name for better toast message
+          const launcher = [...state.launchers, ...state.services].find(l => l.id === launcherId);
+          serverAPI?.toaster?.toast?.(`Launching ${launcher?.name || launcherId}...`);
+        } else {
+          serverAPI?.toaster?.toast?.(`Failed to launch ${launcherId}`);
+        }
+      } catch (error: any) {
+        serverAPI?.toaster?.toast?.(`Failed to launch ${launcherId}`);
+      }
+    },
+    [state.launchers, state.services, serverAPI]
+  );
+
   React.useEffect(() => {
     // Set backend server
     Backend.setServer(serverAPI);
 
     // Load launcher data
     loadData();
-  }, [serverAPI, loadData]);
+
+    // Set up periodic refresh to catch installation status updates
+    const interval = setInterval(() => {
+      // Only refresh if something is installing
+      const hasInstalling = [...state.launchers, ...state.services].some(
+        item => item.installing
+      );
+      if (hasInstalling) {
+        loadData();
+      }
+    }, 3000); // Refresh every 3 seconds when installing
+
+    return () => clearInterval(interval);
+  }, [serverAPI, loadData, state.launchers, state.services]);
 
   // Render loading state
   if (state.loading) {
@@ -116,12 +148,14 @@ export const Content: React.FC<ContentProps> = ({ serverAPI }) => {
         launchers={state.launchers}
         onInstall={handleInstall}
         onUninstall={handleUninstall}
+        onLaunch={handleLaunch}
       />
 
       <ServiceList
         services={state.services}
         onInstall={handleInstall}
         onUninstall={handleUninstall}
+        onLaunch={handleLaunch}
       />
 
       <DebugPanel serverAPI={serverAPI} debugInfo={debugInfo} />
