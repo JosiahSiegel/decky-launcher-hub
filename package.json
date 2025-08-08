@@ -2,9 +2,7 @@
   "name": "launcher-hub",
   "version": "1.5.2",
   "description": "Launcher Hub - Manages non-Steam game launchers on Steam Deck",
-  "type": "module",
   "main": "main.py",
-  "type": "module",
   "scripts": {
     "build": "rollup -c && ./scripts/post-build.sh",
     "watch": "rollup -c -w",

@@ -16,19 +16,9 @@ TEMP_FILE=$(mktemp)
 # Write IIFE wrapper start
 echo "(function(DFL, SP_REACT) {" > "$TEMP_FILE"
 echo "'use strict';" >> "$TEMP_FILE"
-echo "" >> "$TEMP_FILE"
 
-# Extract definePlugin from DFL
-echo "// Use Decky's definePlugin" >> "$TEMP_FILE"
-echo "var definePlugin = DFL.definePlugin;" >> "$TEMP_FILE"
-echo "var staticClasses = DFL.staticClasses;" >> "$TEMP_FILE"
-echo "" >> "$TEMP_FILE"
-
-# Remove problematic imports and @decky/api code, keep the rest
-sed -e '/^const manifest = {"name":"Launcher Hub"};/,/^};$/d' \
-    -e '/^import /d' \
-    -e '/^export { .* as default };/d' \
-    -e '/^\/\/# sourceMappingURL=/d' "$DIST_FILE" >> "$TEMP_FILE"
+# Append the original content, removing the ES6 export line
+grep -v "^export { .* as default };" "$DIST_FILE" | grep -v "^//# sourceMappingURL=" >> "$TEMP_FILE"
 
 # Write IIFE wrapper end
 echo "" >> "$TEMP_FILE"
