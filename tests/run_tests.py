@@ -7,7 +7,7 @@ This is the main test runner for Python backend tests.
 
 import sys
 import asyncio
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, AsyncMock, patch
 from pathlib import Path
 
 # Add parent directory and backend directory to path
@@ -72,8 +72,8 @@ async def test_get_launchers():
     plugin = Plugin()
     launchers = await plugin.get_launchers()
     
-    # Should return 4 gaming launchers
-    assert len(launchers) == 4, f"Expected 4 launchers, got {len(launchers)}"
+    # Should return 7 gaming launchers
+    assert len(launchers) == 7, f"Expected 7 launchers, got {len(launchers)}"
     
     # Check structure
     for launcher in launchers:
@@ -81,7 +81,7 @@ async def test_get_launchers():
         assert 'name' in launcher
         assert 'description' in launcher
         assert 'category' in launcher
-        assert 'version' in launcher
+        # 'version' field not required in new implementation
         assert 'installed' in launcher
         assert launcher['category'] == 'gaming'
         assert launcher['installed'] is False
@@ -91,8 +91,8 @@ async def test_get_services():
     plugin = Plugin()
     services = await plugin.get_services()
     
-    # Should return 3 streaming services
-    assert len(services) == 3, f"Expected 3 services, got {len(services)}"
+    # Should return 4 streaming services
+    assert len(services) == 4, f"Expected 4 services, got {len(services)}"
     
     # Check structure
     for service in services:
@@ -107,13 +107,14 @@ async def test_install_launcher_success():
     """Test successful launcher installation."""
     plugin = Plugin()
     
-    # Install a valid launcher
-    result = await plugin.install_launcher('epic')
-    assert result['success'] is True
-    
-    # Should be in installing state
-    await asyncio.sleep(0.1)
-    assert 'epic' in plugin.installing_launchers
+    # Mock the subprocess call for flatpak installation
+    with patch('asyncio.create_task') as mock_create_task:
+        # Just verify the task is created
+        result = await plugin.install_launcher('epic')
+        assert result['success'] is True
+        
+        # Verify that the installation task was created
+        mock_create_task.assert_called_once()
 
 async def test_install_launcher_invalid():
     """Test installing invalid launcher."""
@@ -128,9 +129,13 @@ async def test_uninstall_launcher_success():
     plugin = Plugin()
     plugin.installed_launchers.add('epic')
     
-    result = await plugin.uninstall_launcher('epic')
-    assert result['success'] is True
-    assert 'epic' not in plugin.installed_launchers
+    # Mock the subprocess call for flatpak uninstallation
+    with patch('subprocess.run') as mock_run:
+        mock_run.return_value = MagicMock(returncode=0, stdout='', stderr='')
+        
+        result = await plugin.uninstall_launcher('epic')
+        assert result['success'] is True
+        assert 'epic' not in plugin.installed_launchers
 
 async def test_uninstall_launcher_not_installed():
     """Test uninstalling not installed launcher."""

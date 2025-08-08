@@ -136,8 +136,8 @@ describe('Launcher Hub Frontend', () => {
   describe('Launcher Management', () => {
     test('should display launchers list', async () => {
       const mockLaunchers = [
-        { id: 'steam', name: 'Steam', installed: true },
-        { id: 'epic', name: 'Epic Games', installed: false },
+        { id: 'lutris', name: 'Lutris', installed: true, description: 'Universal gaming platform' },
+        { id: 'epic', name: 'Epic Games', installed: false, description: 'Epic Games Store' },
       ];
       
       mockServerAPI.callPluginMethod
@@ -147,14 +147,14 @@ describe('Launcher Hub Frontend', () => {
       const { getByText } = render(<Content serverAPI={mockServerAPI} />);
       
       await waitFor(() => {
-        expect(getByText('Steam')).toBeInTheDocument();
+        expect(getByText('Lutris')).toBeInTheDocument();
         expect(getByText('Epic Games')).toBeInTheDocument();
       });
     });
 
     test('should handle launcher installation', async () => {
       const mockLaunchers = [
-        { id: 'epic', name: 'Epic Games', installed: false },
+        { id: 'epic', name: 'Epic Games', installed: false, description: 'Epic Games Store' },
       ];
       
       mockServerAPI.callPluginMethod
@@ -170,9 +170,9 @@ describe('Launcher Hub Frontend', () => {
         expect(getByText('Epic Games')).toBeInTheDocument();
       });
       
-      // Click on the Epic Games button (which shows "Not Installed")
-      const epicButton = getByText('Epic Games').closest('button');
-      fireEvent.click(epicButton);
+      // Click on the Install button
+      const installButton = getByText('Install');
+      fireEvent.click(installButton);
       
       await waitFor(() => {
         expect(mockServerAPI.callPluginMethod).toHaveBeenCalledWith(
@@ -184,7 +184,7 @@ describe('Launcher Hub Frontend', () => {
 
     test('should handle launcher uninstallation', async () => {
       const mockLaunchers = [
-        { id: 'steam', name: 'Steam', installed: true },
+        { id: 'lutris', name: 'Lutris', installed: true, description: 'Universal gaming platform' },
       ];
       
       mockServerAPI.callPluginMethod
@@ -197,17 +197,17 @@ describe('Launcher Hub Frontend', () => {
       const { getByText } = render(<Content serverAPI={mockServerAPI} />);
       
       await waitFor(() => {
-        expect(getByText('Steam')).toBeInTheDocument();
+        expect(getByText('Lutris')).toBeInTheDocument();
       });
       
-      // Click on the Steam button (which shows "Installed")
-      const steamButton = getByText('Steam').closest('button');
-      fireEvent.click(steamButton);
+      // Click on the Uninstall button
+      const uninstallButton = getByText('Uninstall');
+      fireEvent.click(uninstallButton);
       
       await waitFor(() => {
         expect(mockServerAPI.callPluginMethod).toHaveBeenCalledWith(
           'uninstall_launcher',
-          { launcher_id: 'steam' }
+          { launcher_id: 'lutris' }
         );
       });
     });
@@ -220,7 +220,8 @@ describe('Launcher Hub Frontend', () => {
           installed: false,
           installing: true,
           progress: 45,
-          install_phase: 'Downloading'
+          install_phase: 'Downloading',
+          description: 'Epic Games Store'
         },
       ];
       
@@ -231,7 +232,7 @@ describe('Launcher Hub Frontend', () => {
       const { getByText } = render(<Content serverAPI={mockServerAPI} />);
       
       await waitFor(() => {
-        expect(getByText(/Installing.*45%/)).toBeInTheDocument();
+        expect(getByText(/Downloading.*45%/)).toBeInTheDocument();
       });
     });
   });
@@ -239,8 +240,8 @@ describe('Launcher Hub Frontend', () => {
   describe('Service Display', () => {
     test('should display streaming services', async () => {
       const mockServices = [
-        { id: 'geforce_now', name: 'GeForce NOW', installed: false },
-        { id: 'xbox_cloud', name: 'Xbox Cloud Gaming', installed: true },
+        { id: 'netflix', name: 'Netflix', installed: false, description: 'Netflix streaming' },
+        { id: 'spotify', name: 'Spotify', installed: true, description: 'Music streaming' },
       ];
       
       mockServerAPI.callPluginMethod
@@ -250,8 +251,8 @@ describe('Launcher Hub Frontend', () => {
       const { getByText } = render(<Content serverAPI={mockServerAPI} />);
       
       await waitFor(() => {
-        expect(getByText('GeForce NOW')).toBeInTheDocument();
-        expect(getByText('Xbox Cloud Gaming')).toBeInTheDocument();
+        expect(getByText('Netflix')).toBeInTheDocument();
+        expect(getByText('Spotify')).toBeInTheDocument();
       });
     });
   });
@@ -328,7 +329,7 @@ describe('Launcher Hub Frontend', () => {
   describe('Toast Notifications', () => {
     test('should show toast on successful installation', async () => {
       const mockLaunchers = [
-        { id: 'epic', name: 'Epic Games', installed: false },
+        { id: 'epic', name: 'Epic Games', installed: false, description: 'Epic Games Store' },
       ];
       
       mockServerAPI.callPluginMethod
@@ -344,8 +345,8 @@ describe('Launcher Hub Frontend', () => {
         expect(getByText('Epic Games')).toBeInTheDocument();
       });
       
-      const epicButton = getByText('Epic Games').closest('button');
-      fireEvent.click(epicButton);
+      const installButton = getByText('Install');
+      fireEvent.click(installButton);
       
       await waitFor(() => {
         expect(mockServerAPI.toaster.toast).toHaveBeenCalledWith('Installing epic...');

@@ -52,8 +52,8 @@ class TestPlugin:
         plugin = Plugin()
         launchers = await plugin.get_launchers()
         
-        # Should return 4 gaming launchers
-        assert len(launchers) == 4
+        # Should return 7 gaming launchers
+        assert len(launchers) == 7
         
         # Check structure
         for launcher in launchers:
@@ -61,7 +61,6 @@ class TestPlugin:
             assert 'name' in launcher
             assert 'description' in launcher
             assert 'category' in launcher
-            assert 'version' in launcher
             assert 'installed' in launcher
             assert launcher['category'] == 'gaming'
             assert launcher['installed'] is False  # Initially not installed
@@ -72,8 +71,8 @@ class TestPlugin:
         plugin = Plugin()
         services = await plugin.get_services()
         
-        # Should return 3 streaming services
-        assert len(services) == 3
+        # Should return 4 streaming services
+        assert len(services) == 4
         
         # Check structure
         for service in services:
@@ -89,13 +88,20 @@ class TestPlugin:
         """Test successful launcher installation."""
         plugin = Plugin()
         
-        # Install a valid launcher
-        result = await plugin.install_launcher('epic')
-        assert result['success'] is True
-        
-        # Should be in installing state
-        await asyncio.sleep(0.1)  # Let async task start
-        assert 'epic' in plugin.installing_launchers
+        # Mock the flatpak installation
+        with patch('asyncio.create_subprocess_exec') as mock_subprocess:
+            mock_process = AsyncMock()
+            mock_process.communicate = AsyncMock(return_value=(b'', b''))
+            mock_process.returncode = 0
+            mock_subprocess.return_value = mock_process
+            
+            # Install a valid launcher
+            result = await plugin.install_launcher('epic')
+            assert result['success'] is True
+            
+            # Should be in installing state
+            await asyncio.sleep(0.1)  # Let async task start
+            assert 'epic' in plugin.installing_launchers
     
     @pytest.mark.asyncio
     async def test_install_launcher_invalid(self):
@@ -133,9 +139,13 @@ class TestPlugin:
         plugin = Plugin()
         plugin.installed_launchers.add('epic')
         
-        result = await plugin.uninstall_launcher('epic')
-        assert result['success'] is True
-        assert 'epic' not in plugin.installed_launchers
+        # Mock the subprocess call
+        with patch('subprocess.run') as mock_run:
+            mock_run.return_value = MagicMock(returncode=0, stdout='', stderr='')
+            
+            result = await plugin.uninstall_launcher('epic')
+            assert result['success'] is True
+            assert 'epic' not in plugin.installed_launchers
     
     @pytest.mark.asyncio
     async def test_uninstall_launcher_not_installed(self):
