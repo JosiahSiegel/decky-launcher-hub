@@ -1,17 +1,50 @@
-// Jest setup file
+/**
+ * Jest setup file for Launcher Hub tests
+ * Configures the test environment and global mocks
+ */
+
+// Add custom matchers from jest-dom
 require('@testing-library/jest-dom');
 
-// Mock global objects
-global.SP_REACT = require('react');
-global.SP_REACTDOM = require('react-dom');
-global.DFL = require('./mocks/deckyUi.cjs');
+// Mock console methods to reduce noise in tests
+global.console = {
+  ...console,
+  error: jest.fn(),
+  warn: jest.fn(),
+  log: jest.fn(), // Mock log too to prevent EPIPE errors
+  info: jest.fn(),
+  debug: jest.fn(),
+};
 
-// Mock window objects
-global.window = {
-  ...global.window,
-  __DECKY_SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED_deckyLoaderAPIInit: {
-    connect: jest.fn(() => ({
-      _version: 2,
-    })),
+// Mock localStorage
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+};
+global.localStorage = localStorageMock;
+
+// Mock Decky global objects
+global.DFL = {
+  definePlugin: jest.fn(),
+  PluginController: {
+    pluginList: [],
   },
 };
+
+global.SP_REACT = {
+  useState: jest.fn(),
+  useEffect: jest.fn(),
+  createElement: jest.fn(),
+  Fragment: jest.fn(),
+};
+
+// Reset mocks before each test
+beforeEach(() => {
+  jest.clearAllMocks();
+  localStorageMock.getItem.mockClear();
+  localStorageMock.setItem.mockClear();
+  localStorageMock.removeItem.mockClear();
+  localStorageMock.clear.mockClear();
+});

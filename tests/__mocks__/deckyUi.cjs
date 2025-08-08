@@ -1,20 +1,59 @@
+/**
+ * Mock for @decky/ui module
+ */
+
+const React = require('react');
+
 module.exports = {
-  staticClasses: {
-    Title: 'title-class',
-    Label: 'label-class',
-  },
-  PanelSection: ({ title, children }) => ({ title, children }),
-  PanelSectionRow: ({ children }) => ({ children }),
-  ButtonItem: ({ layout, onClick, children }) => ({ layout, onClick, children }),
-  ToggleField: ({ label, checked, onChange }) => ({ label, checked, onChange }),
-  SliderField: ({ label, value, min, max, onChange }) => ({ label, value, min, max, onChange }),
-  Dropdown: ({ selectedOption, options, onChange }) => ({ selectedOption, options, onChange }),
-  TextField: ({ label, value, onChange }) => ({ label, value, onChange }),
-  Navigation: {
-    Navigate: jest.fn(),
-    NavigateBack: jest.fn(),
-  },
-  Modal: ({ children }) => ({ children }),
+  // UI Components
+  Button: jest.fn(({ children, onClick }) => 
+    React.createElement('button', { onClick }, children)
+  ),
+  
+  ButtonItem: jest.fn(({ children, onClick, label }) => 
+    React.createElement('button', { onClick, 'aria-label': label }, children)
+  ),
+  
+  PanelSection: jest.fn(({ children, title }) => 
+    React.createElement('div', { className: 'panel-section' }, 
+      title && React.createElement('h3', {}, title),
+      children
+    )
+  ),
+  
+  PanelSectionRow: jest.fn(({ children }) => 
+    React.createElement('div', { className: 'panel-section-row' }, children)
+  ),
+  
+  TextField: jest.fn(({ value, onChange, label }) => 
+    React.createElement('input', { 
+      type: 'text', 
+      value, 
+      onChange: (e) => onChange(e.target.value),
+      'aria-label': label 
+    })
+  ),
+  
+  Toggle: jest.fn(({ value, onChange, label }) => 
+    React.createElement('input', { 
+      type: 'checkbox', 
+      checked: value, 
+      onChange: (e) => onChange(e.target.checked),
+      'aria-label': label 
+    })
+  ),
+  
+  Router: jest.fn(({ children }) => 
+    React.createElement('div', { className: 'router' }, children)
+  ),
+  
+  // Utilities
   showModal: jest.fn(),
-  closeModal: jest.fn(),
+  showContextMenu: jest.fn(),
+  
+  // Hooks
+  useParams: jest.fn(() => ({})),
+  
+  // Constants
+  SERVERAPI_TIMEOUT: 10000,
 };
