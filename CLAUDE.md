@@ -1,18 +1,78 @@
 # Launcher Hub - Decky Plugin Technical Documentation
 
-## ⚠️ CRITICAL: ES6 Modules are the Future (DO NOT USE IIFE)
+## ⚠️ CRITICAL: Configuration Requirements (Updated August 8, 2025)
 
-**As of 2025, Decky has migrated to a new architecture:**
-- ✅ **USE**: ES6 modules with `export default`
-- ✅ **USE**: `@decky/api` and `@decky/ui` packages
-- ❌ **DEPRECATED**: IIFE format (legacy, being phased out)
-- ❌ **DEPRECATED**: `decky-frontend-lib` (replaced by @decky packages)
+**DO NOT CHANGE THESE CONFIGURATIONS - They will break the plugin:**
 
-**Migration Status:**
-- Decky 3.0+ requires the new API
-- Official template uses `@decky/rollup` v1.0.1, `@decky/api` v1.1.2, `@decky/ui` v4.7.2
-- 75% of installed plugins (6/8) already use ES6 export format
-- IIFE only works temporarily due to backward compatibility
+### 1. package.json - NO "type": "module"
+```json
+{
+  "name": "launcher-hub",
+  "version": "1.5.2",
+  // DO NOT ADD "type": "module" - breaks plugin with "plugin_exports.default is not a function"
+}
+```
+
+### 2. rollup.config.mjs - Must use .mjs extension
+```javascript
+// File MUST be named rollup.config.mjs (not .js) to support ES6 imports
+// This allows ES6 imports without adding "type": "module" to package.json
+import deckyPlugin from "@decky/rollup";
+```
+
+### 3. Test files - Must use .cjs extension
+```
+jest.config.cjs         // NOT .js
+babel.config.cjs        // NOT .js
+tests/__mocks__/*.cjs   // ALL mock files
+```
+
+### 4. post-build.sh - REQUIRED for IIFE wrapper
+```bash
+# This script MUST run after build to wrap output in IIFE
+# Without this, plugin fails with "plugin_exports.default is not a function"
+```
+
+### 5. File permissions - post-build.sh must be executable
+```bash
+git update-index --chmod=+x scripts/post-build.sh
+```
+
+**Current Reality (Verified Working August 8, 2025 - Commit 6fc32b4+):**
+- Despite using @decky/api v1.1.2, the plugin MUST be wrapped in IIFE format
+- The build process compiles ES6 source to ES6, then post-build.sh wraps it in IIFE
+- GitHub Actions work with .mjs rollup config and .cjs test configs
+- Plugin loads successfully on Steam Deck with IIFE wrapper
+
+## ⚠️ Quick Verification: Is the Plugin Working?
+
+### Check These First (in order):
+1. **SSH to Steam Deck and check logs:**
+   ```bash
+   ssh deck@IP "journalctl -u plugin_loader --since '2 minutes ago' | grep -i launcher"
+   ```
+   - ✅ Should see: "Loaded Launcher Hub"
+   - ❌ If you see: "plugin_exports.default is not a function" - IIFE wrapper missing
+   - ❌ If you see: "Cannot use import statement" - Wrong module format
+
+2. **Check the plugin process:**
+   ```bash
+   ssh deck@IP "ps aux | grep -i 'launcher.*hub' | grep -v grep"
+   ```
+   - ✅ Should see a Python process running
+
+3. **Check dist/index.js format:**
+   ```bash
+   head -n 1 dist/index.js
+   ```
+   - ✅ Should start with: `(function(DFL, SP_REACT) {`
+   - ❌ If it has `import` or `export` statements - post-build.sh didn't run
+
+4. **Quick one-liner diagnostic:**
+   ```bash
+   ssh deck@IP "echo '=== PLUGIN STATUS ===' && journalctl -u plugin_loader --since '30 seconds ago' | grep -i launcher | tail -5 && echo '=== BACKEND ===' && ps aux | grep -i 'launcher.*hub' | grep -v grep | wc -l"
+   ```
+   - Should show "Loaded Launcher Hub" and backend count = 1
 
 ## Project Structure (v1.5.0)
 
