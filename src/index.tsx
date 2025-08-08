@@ -11,6 +11,7 @@ initializeErrorHandler();
 import { Content } from './components/Content';
 
 // Only export the plugin as default
+// @ts-ignore - DefinePluginFn type mismatch, but works at runtime
 export default definePlugin((serverApi: any) => {
   // Minimal initialization logging
   console.log('[LauncherHub] Plugin initialized');

@@ -3,6 +3,7 @@
  * Returns the plugin directly without complex wrapping
  */
 
+import React from 'react';
 import { definePlugin, staticClasses } from 'decky-frontend-lib';
 import { FaRocket } from 'react-icons/fa';
 import { Content } from './components/Content';
@@ -13,6 +14,7 @@ import { initializeErrorHandler } from './utils/errorHandler';
 initializeErrorHandler();
 
 // Create and return the plugin
+// @ts-ignore - DefinePluginFn type mismatch, but works at runtime
 const plugin = definePlugin((serverApi: any) => {
   console.log('[LauncherHub] Plugin initialized');
 
