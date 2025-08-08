@@ -204,11 +204,31 @@ export default plugin;
 
 ## Backend Communication Pattern
 
-### The Working Pattern (serverAPI)
+### Modern Pattern (Using @decky/api)
 
 **Location:** `src/services/Backend.ts`
 
 ```javascript
+import { call } from '@decky/api';
+
+class Backend {
+  static async callMethod(method, ...args) {
+    try {
+      // Use the new @decky/api call function
+      const result = await call(method, ...args);
+      return { result: result || [] };
+    } catch (error) {
+      console.error(`Backend error for ${method}:`, error);
+      return { result: [] };
+    }
+  }
+}
+```
+
+### Legacy Pattern (DEPRECATED - causes warnings)
+
+```javascript
+// DON'T USE THIS - causes "legacy method calls" warning
 class Backend {
   static serverAPI = null;
   
@@ -217,26 +237,9 @@ class Backend {
   }
   
   static async callMethod(methodName, args = {}) {
-    if (!this.serverAPI) {
-      console.error("[Plugin] Backend not initialized");
-      return [];
-    }
-    
-    try {
-      const result = await this.serverAPI.callPluginMethod(methodName, args);
-      
-      // Handle different response formats
-      if (result && result.success === false) {
-        console.error("[Plugin] Backend error:", result.error);
-        return [];
-      }
-      
-      // Return result, defaulting to empty array
-      return result?.result ?? [];
-    } catch (error) {
-      console.error("[Plugin] Backend error:", error);
-      return [];
-    }
+    // This uses the old serverAPI.callPluginMethod
+    const result = await this.serverAPI.callPluginMethod(methodName, args);
+    return result?.result ?? [];
   }
 }
 ```
@@ -264,8 +267,11 @@ class Plugin:
         """Callable from frontend"""
         return [{"id": 1, "name": "Item"}]
     
-    async def perform_action(self, param: str) -> dict:
-        """Callable from frontend with parameters"""
+    async def perform_action(self, param: str = None, **kwargs) -> dict:
+        """Callable from frontend - handles both old and new API formats"""
+        # Handle both old dict format and new direct argument format
+        if param is None and 'param' in kwargs:
+            param = kwargs['param']
         return {"success": True, "result": param}
 ```
 
@@ -449,18 +455,30 @@ http://DECK_IP:8081
 
 ### Issue: "TypeError: plugin_exports.default is not a function"
 
-**Cause:** Wrong export format  
-**Solution:** Use ES6 `export default` from definePlugin()
+**Cause:** Wrong export format
+**Solution:** Use IIFE with return statement, not ES6 export
 
 ### Issue: "currentItems.map is not a function"
 
 **Cause:** Backend returning non-array
 **Solution:** Always return arrays from backend, check with `Array.isArray()`
 
-### Issue: "DFL is not defined"
+### Issue: "DFL is not defined" or "deckyFrontendLib is not defined"
 
-**Cause:** Trying to access in wrong context or Decky not injected
-**Solution:** Check SharedJSContext, verify Decky is running
+**Cause:** Wrong global variable names in IIFE wrapper
+**Solution:** Use `(DFL, SP_REACT)` not `(deckyFrontendLib, React)`
+
+### Issue: "Plugin is using legacy method calls" warning
+
+**Cause:** Using old `serverAPI.callPluginMethod()` instead of modern API
+**Solution:** Use `call()` from `@decky/api` package
+
+### Issue: Plugin loads but no backend communication
+
+**Cause:** API mismatch between frontend and backend
+**Solution:** 
+1. Use modern `call()` function from `@decky/api`
+2. Update backend methods to handle both argument formats
 
 ### Issue: "SyntaxError: Cannot use import statement outside a module"
 
@@ -478,7 +496,8 @@ http://DECK_IP:8081
 1. Backend running: `ps aux | grep "Launcher Hub"`
 2. Files in place: `ls ~/homebrew/plugins/launcher-hub/`
 3. Check logs: `journalctl -u plugin_loader -n 50`
-4. Verify format: ES6 module with export default
+4. Verify format: IIFE with correct structure
+5. Check for "legacy method calls" warning - indicates old API usage
 
 ### Issue: Permission denied during deployment
 
@@ -610,6 +629,20 @@ PLUGIN_NAME=launcher-hub
 - Remote - SSH
 
 ## Lessons Learned
+
+### What Works
+1. IIFE format with `(DFL, SP_REACT)` parameters
+2. Modern `@decky/api` `call()` function for backend communication
+3. Simple file structure without complex builds
+4. Hot reload for rapid development
+5. Backend methods accepting both dict and direct arguments
+
+### What Doesn't Work
+1. ES6 modules in production without IIFE wrapper
+2. Using wrong global names (`deckyFrontendLib` instead of `DFL`)
+3. Legacy `serverAPI.callPluginMethod()` - causes "legacy method calls" warnings
+4. Complex TypeScript configurations
+5. Assuming array returns from backend
 
 ### 2025 Definitive Answer: ES6 Modules are Standard
 
@@ -750,4 +783,78 @@ They rely on Decky Loader injecting SP_REACT and DFL as globals BEFORE the plugi
 
 ---
 
-*Last Updated: v1.5.1 (August 2025) - DEFINITIVE: ES6 modules are the standard. IIFE is deprecated. Migrate to @decky/api ASAP.*
+## API Migration Notes (Critical)
+
+### Moving from Legacy to Modern Decky API
+
+#### Frontend Changes Required:
+
+1. **Import the call function:**
+```javascript
+import { call } from '@decky/api';
+```
+
+2. **Replace serverAPI.callPluginMethod:**
+```javascript
+// OLD (causes warnings)
+await serverAPI.callPluginMethod('method_name', { arg: value });
+
+// NEW (correct)
+await call('method_name', value);
+```
+
+3. **Update Backend.ts service:**
+```javascript
+// Don't store serverAPI anymore
+static async callMethod(method: string, ...args: any[]) {
+  const result = await call(method, ...args);
+  return { result: result || [] };
+}
+```
+
+#### Backend Changes Required:
+
+1. **Update method signatures to handle both formats:**
+```python
+async def method_name(self, arg: str = None, **kwargs) -> dict:
+    # Handle both old dict format and new direct argument format
+    if arg is None and 'arg' in kwargs:
+        arg = kwargs['arg']
+    # ... rest of method
+```
+
+#### IIFE Wrapper Requirements:
+
+1. **Must use correct global names:**
+```javascript
+// CORRECT
+(function(DFL, SP_REACT) {
+  // ... plugin code ...
+  return index;
+})(DFL, SP_REACT);
+
+// WRONG - will cause "not defined" errors
+(function(deckyFrontendLib, React) { ... })(deckyFrontendLib, React);
+```
+
+### Debugging Checklist
+
+1. **Check for legacy warnings:**
+   ```bash
+   ssh deck@IP "journalctl -u plugin_loader -f | grep 'legacy method'"
+   ```
+
+2. **Verify IIFE wrapper:**
+   ```bash
+   head -n 5 dist/index.js  # Should show (function(DFL, SP_REACT)
+   tail -n 5 dist/index.js  # Should show })(DFL, SP_REACT);
+   ```
+
+3. **Test backend communication:**
+   - Check browser console for `[LauncherHub]` logs
+   - Look for "Backend call succeeded" messages
+   - Monitor backend logs for method calls
+
+---
+
+*Last Updated: After fixing API migration issues - Modern @decky/api working*

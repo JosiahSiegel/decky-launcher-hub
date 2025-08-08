@@ -148,16 +148,23 @@ async def test_uninstall_launcher_not_installed():
 async def test_get_launchers_with_installed():
     """Test get_launchers shows installed status."""
     plugin = Plugin()
-    plugin.installed_launchers.add('epic')
-    plugin.installed_launchers.add('gog')
+    
+    # Patch the detection method to not reset our test data
+    async def mock_detect():
+        plugin.installed_launchers.add('epic')
+        plugin.installed_launchers.add('gog')
+        plugin.flatpak_installed_cache = plugin.installed_launchers.copy()
+        plugin.cache_time = 999999999  # Far in future so cache is valid
+    
+    plugin._detect_installed_launchers = mock_detect
     
     launchers = await plugin.get_launchers()
     
     for launcher in launchers:
         if launcher['id'] in ['epic', 'gog']:
-            assert launcher['installed'] is True
+            assert launcher['installed'] is True, f"Expected {launcher['id']} to be installed"
         else:
-            assert launcher['installed'] is False
+            assert launcher['installed'] is False, f"Expected {launcher['id']} to not be installed"
 
 async def test_get_launchers_with_installing():
     """Test get_launchers shows installing status."""

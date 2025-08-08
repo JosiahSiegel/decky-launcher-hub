@@ -1,6 +1,6 @@
 {
   "name": "Launcher Hub",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "author": "Independent Developer",
   "api_version": 1,
   "flags": ["debug"],

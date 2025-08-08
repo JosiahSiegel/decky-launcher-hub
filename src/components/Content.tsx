@@ -11,6 +11,8 @@ interface ContentProps {
 }
 
 export const Content: React.FC<ContentProps> = ({ serverAPI }) => {
+  console.log('[LauncherHub] Content component rendering, serverAPI:', !!serverAPI);
+  
   const [state, setState] = React.useState<AppState>({
     launchers: [],
     services: [],
@@ -23,12 +25,16 @@ export const Content: React.FC<ContentProps> = ({ serverAPI }) => {
   // Load launchers and services
   const loadData = React.useCallback(async () => {
     try {
+      console.log('[LauncherHub] loadData called, starting to load data...');
       setState((prev) => ({ ...prev, loading: true, error: null }));
 
-      const [launchers, services] = await Promise.all([
-        Backend.getLaunchers(),
-        Backend.getServices(),
-      ]);
+      console.log('[LauncherHub] Calling Backend.getLaunchers()...');
+      const launchers = await Backend.getLaunchers();
+      console.log('[LauncherHub] getLaunchers returned:', launchers);
+      
+      console.log('[LauncherHub] Calling Backend.getServices()...');
+      const services = await Backend.getServices();
+      console.log('[LauncherHub] getServices returned:', services);
 
       setState((prev) => ({
         ...prev,
@@ -54,9 +60,15 @@ export const Content: React.FC<ContentProps> = ({ serverAPI }) => {
       try {
         await Backend.installLauncher(launcherId);
         await loadData(); // Reload to get updated status
-        serverAPI?.toaster?.toast?.(`Installing ${launcherId}...`);
+        serverAPI?.toaster?.toast?.({
+          title: "Launcher Hub",
+          body: `Installing ${launcherId}...`
+        });
       } catch (error: any) {
-        serverAPI?.toaster?.toast?.(`Failed to install ${launcherId}`);
+        serverAPI?.toaster?.toast?.({
+          title: "Installation Failed", 
+          body: `Failed to install ${launcherId}`
+        });
       }
     },
     [loadData, serverAPI]
@@ -68,9 +80,15 @@ export const Content: React.FC<ContentProps> = ({ serverAPI }) => {
       try {
         await Backend.uninstallLauncher(launcherId);
         await loadData(); // Reload to get updated status
-        serverAPI?.toaster?.toast?.(`Uninstalling ${launcherId}...`);
+        serverAPI?.toaster?.toast?.({
+          title: "Launcher Hub",
+          body: `Uninstalling ${launcherId}...`
+        });
       } catch (error: any) {
-        serverAPI?.toaster?.toast?.(`Failed to uninstall ${launcherId}`);
+        serverAPI?.toaster?.toast?.({
+          title: "Uninstall Failed",
+          body: `Failed to uninstall ${launcherId}`
+        });
       }
     },
     [loadData, serverAPI]
@@ -84,22 +102,35 @@ export const Content: React.FC<ContentProps> = ({ serverAPI }) => {
         if (result?.result?.success) {
           // Find the launcher name for better toast message
           const launcher = [...state.launchers, ...state.services].find(l => l.id === launcherId);
-          serverAPI?.toaster?.toast?.(`Launching ${launcher?.name || launcherId}...`);
+          serverAPI?.toaster?.toast?.({
+            title: "Launcher Hub",
+            body: `Launching ${launcher?.name || launcherId}...`
+          });
         } else {
-          serverAPI?.toaster?.toast?.(`Failed to launch ${launcherId}`);
+          serverAPI?.toaster?.toast?.({
+            title: "Launch Failed",
+            body: `Failed to launch ${launcherId}`
+          });
         }
       } catch (error: any) {
-        serverAPI?.toaster?.toast?.(`Failed to launch ${launcherId}`);
+        serverAPI?.toaster?.toast?.({
+          title: "Launch Failed",
+          body: `Failed to launch ${launcherId}`
+        });
       }
     },
     [state.launchers, state.services, serverAPI]
   );
 
   React.useEffect(() => {
+    console.log('[LauncherHub] Content useEffect running, serverAPI:', !!serverAPI);
+    
     // Set backend server
     Backend.setServer(serverAPI);
+    console.log('[LauncherHub] Backend server set');
 
     // Load launcher data
+    console.log('[LauncherHub] Calling loadData from useEffect...');
     loadData();
 
     // Set up periodic refresh to catch installation status updates
@@ -121,7 +152,11 @@ export const Content: React.FC<ContentProps> = ({ serverAPI }) => {
     return (
       <PanelSection title="Launcher Hub">
         <PanelSectionRow>
-          <div style={{ textAlign: 'center', padding: '20px' }}>Loading...</div>
+          <div style={{ textAlign: 'center', padding: '20px' }}>
+            Loading...
+            <br />
+            <small>Backend: {serverAPI ? 'Connected' : 'Not connected'}</small>
+          </div>
         </PanelSectionRow>
       </PanelSection>
     );

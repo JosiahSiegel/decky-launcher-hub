@@ -13,11 +13,12 @@ echo "Wrapping $DIST_FILE in IIFE format..."
 # Create a temporary file
 TEMP_FILE=$(mktemp)
 
-# Write IIFE wrapper start
+# Write IIFE wrapper start (using DFL and SP_REACT which are the actual globals)
 echo "(function(DFL, SP_REACT) {" > "$TEMP_FILE"
 echo "'use strict';" >> "$TEMP_FILE"
+echo "" >> "$TEMP_FILE"
 
-# Append the original content, removing the ES6 export line
+# Append the original content, removing the ES6 export line and sourcemap
 grep -v "^export { .* as default };" "$DIST_FILE" | grep -v "^//# sourceMappingURL=" >> "$TEMP_FILE"
 
 # Write IIFE wrapper end

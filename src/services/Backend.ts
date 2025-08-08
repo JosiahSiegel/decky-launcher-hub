@@ -2,6 +2,7 @@
  * Backend service for communicating with the Python backend
  */
 
+import { call } from '@decky/api';
 import { cache } from './cache';
 
 export class Backend {
@@ -11,19 +12,18 @@ export class Backend {
     this.serverAPI = api;
   }
 
-  static async callMethod(method: string, args: any = {}) {
-    if (!this.serverAPI) {
-      console.warn('[LauncherHub] Backend not initialized');
-      return { result: [] };
-    }
+  static async callMethod(method: string, ...args: any[]) {
+    console.log(`[LauncherHub] Attempting to call backend method: ${method}`);
+    console.log(`[LauncherHub] Args:`, args);
 
     try {
-      const result = await this.serverAPI.callPluginMethod(method, args);
-      console.log(`[LauncherHub] Backend call ${method}:`, result);
-      return result;
+      // Use the new @decky/api call function
+      const result = await call(method, ...args);
+      console.log(`[LauncherHub] Backend call ${method} succeeded:`, result);
+      return { result: result || [] };
     } catch (error) {
       console.error(`[LauncherHub] Backend error for ${method}:`, error);
-      throw error;
+      return { result: [] };
     }
   }
 
@@ -68,21 +68,21 @@ export class Backend {
   }
 
   static async installLauncher(launcherId: string) {
-    const result = await this.callMethod('install_launcher', { launcher_id: launcherId });
+    const result = await this.callMethod('install_launcher', launcherId);
     // Clear cache after modification
     cache.clear();
     return result;
   }
 
   static async uninstallLauncher(launcherId: string) {
-    const result = await this.callMethod('uninstall_launcher', { launcher_id: launcherId });
+    const result = await this.callMethod('uninstall_launcher', launcherId);
     // Clear cache after modification
     cache.clear();
     return result;
   }
 
   static async launchLauncher(launcherId: string) {
-    const result = await this.callMethod('launch_launcher', { launcher_id: launcherId });
+    const result = await this.callMethod('launch_launcher', launcherId);
     return result;
   }
 }

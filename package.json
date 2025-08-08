@@ -1,6 +1,6 @@
 {
   "name": "launcher-hub",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "Launcher Hub - Manages non-Steam game launchers on Steam Deck",
   "main": "main.py",
   "scripts": {
