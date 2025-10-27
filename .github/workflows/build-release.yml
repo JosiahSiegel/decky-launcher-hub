@@ -61,7 +61,7 @@ jobs:
         tar -czf launcher-hub.tar.gz launcher-hub/
     
     - name: Upload build artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v5
       with:
         name: launcher-hub-plugin
         path: launcher-hub.tar.gz
